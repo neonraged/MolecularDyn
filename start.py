@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from matplotlib import pyplot as plt
 import numpy as np
 import mpl_toolkits.mplot3d.axes3d as p3
@@ -63,28 +64,28 @@ class Simulation:
 
     def bounce(self, particle):
 
-        if particle.x > self.max_x + 1:
-            particle.x = self.max_x - 1
+        if particle.x + particle.v_x*particle.dt > self.max_x:
+            particle.x = self.max_x
             particle.v_x = -particle.v_x
 
-        elif particle.x < self.min_x - 1:
-            particle.x = self.min_x + 1
+        elif particle.x + particle.v_x*particle.dt < self.min_x:
+            particle.x = self.min_x
             particle.v_x = -particle.v_x
 
-        if particle.y > self.max_y + 1:
-            particle.y = self.max_y - 1
+        if particle.y + particle.v_y*particle.dt > self.max_y:
+            particle.y = self.max_y
             particle.v_y = -particle.v_y
 
-        elif particle.y < self.min_y - 1:
-            particle.y = self.min_y + 1
+        elif particle.y + particle.v_y*particle.dt < self.min_y:
+            particle.y = self.min_y
             particle.v_y = -particle.v_y
 
-        if particle.z > self.max_z - 1:
-            particle.z = self.max_z - 1
+        if particle.z + particle.v_z*particle.dt > self.max_z:
+            particle.z = self.max_z
             particle.v_z = -particle.v_z
 
-        elif particle.z < self.min_z - 1:
-            particle.z = self.min_z + 1
+        elif particle.z + particle.v_z*particle.dt < self.min_z:
+            particle.z = self.min_z
             particle.v_z = -particle.v_z
 
     def addparticle(self, numb):
@@ -122,21 +123,27 @@ class AnimatedPlot:
             self.aniobj.append(aniobject)
 
 
-
 time = 50
+
 env = Simulation()
 env.process(time)
+
 fig = plt.figure()
 ax = p3.Axes3D(fig)
+
 plotting = AnimatedPlot(env)
 plotting.addaniobj(ax)
+
 ax.legend()
 ax.set_xlim((env.min_x, env.max_x))
 ax.set_ylim((env.min_y, env.max_y))
 ax.set_zlim((env.min_z, env.max_z))
+
 ani_list = [0 for x in range(len(env.particles))]
+
 for i in range(len(env.particles)):
     obj = env.particles[i]
     aniobjf = plotting.aniobj[i]
     ani_list[i] = animation.FuncAnimation(fig, move_obj, 50, fargs=(obj.xmass, obj.ymass, obj.zmass, aniobjf))
+
 plt.show()

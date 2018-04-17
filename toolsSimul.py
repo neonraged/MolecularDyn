@@ -49,66 +49,6 @@ class Particle:
         self.zmass.append(self.z)
 
 
-class Simulation:
-
-    # Создание класса сосуда симуляции и происшествий внутри модели
-
-    def __init__(self):
-        self.min_x = int(input("X axis min border:"))
-        self.min_y = int(input("Y axis min border:"))
-        self.min_z = int(input("Z axis min border:"))
-        self.max_x = int(input("X axis max border:"))
-        self.max_y = int(input("Y axis max border:"))
-        self.max_z = int(input("Z axis max border:"))
-        self.particles = []
-
-    def bounce(self, particle):
-
-        if particle.x + particle.v_x*particle.dt > self.max_x:
-            particle.x = self.max_x
-            particle.v_x = -particle.v_x
-
-        elif particle.x + particle.v_x*particle.dt < self.min_x:
-            particle.x = self.min_x
-            particle.v_x = -particle.v_x
-
-        if particle.y + particle.v_y*particle.dt > self.max_y:
-            particle.y = self.max_y
-            particle.v_y = -particle.v_y
-
-        elif particle.y + particle.v_y*particle.dt < self.min_y:
-            particle.y = self.min_y
-            particle.v_y = -particle.v_y
-
-        if particle.z + particle.v_z*particle.dt > self.max_z:
-            particle.z = self.max_z
-            particle.v_z = -particle.v_z
-
-        elif particle.z + particle.v_z*particle.dt < self.min_z:
-            particle.z = self.min_z
-            particle.v_z = -particle.v_z
-
-    def addparticle(self, numb):
-        for i in range(numb):
-            self.particles.append(Particle())
-
-    def process(self, time):
-
-        self.addparticle(int(input("Enter number of particles in system:")))
-
-        for t in range(0, time):
-
-            for i in range(0, len(self.particles)):
-                a = self.particles[i]
-                a.move()
-
-            for bou in range(0, len(self.particles)):
-                self.bounce(self.particles[bou])
-
-            for con in range(1, len(self.particles)):
-                colliding(self.particles[con-1], self.particles[con])
-
-
 class AnimatedPlot:
 
     def __init__(self, envs):
@@ -123,3 +63,61 @@ class AnimatedPlot:
             self.aniobj.append(aniobject)
 
 
+class Gas:
+
+    def __init__(self, partnum=1, types=0):
+        self.partnum = partnum
+        self.types = types
+        self.particles = []
+        self.min_x = int(input("X axis min border:"))
+        self.min_y = int(input("Y axis min border:"))
+        self.min_z = int(input("Z axis min border:"))
+        self.max_x = int(input("X axis max border:"))
+        self.max_y = int(input("Y axis max border:"))
+        self.max_z = int(input("Z axis max border:"))
+
+    def addparticle(self):
+        for i in range(self.partnum):
+            self.particles.append(Particle())
+
+    def process(self, time):
+
+        self.addparticle()
+
+        for t in range(0, time):
+
+            for i in range(0, len(self.particles)):
+                a = self.particles[i]
+                a.move()
+
+            for bou in range(0, len(self.particles)):
+                self.bounce(self.particles[bou])
+
+            for con in range(1, len(self.particles)):
+                colliding(self.particles[con-1], self.particles[con])
+
+    def bounce(self, particle):
+
+        if particle.x + particle.v_x * particle.dt > self.max_x:
+            particle.x = self.max_x
+            particle.v_x = -particle.v_x
+
+        elif particle.x + particle.v_x * particle.dt < self.min_x:
+            particle.x = self.min_x
+            particle.v_x = -particle.v_x
+
+        if particle.y + particle.v_y * particle.dt > self.max_y:
+            particle.y = self.max_y
+            particle.v_y = -particle.v_y
+
+        elif particle.y + particle.v_y * particle.dt < self.min_y:
+            particle.y = self.min_y
+            particle.v_y = -particle.v_y
+
+        if particle.z + particle.v_z * particle.dt > self.max_z:
+            particle.z = self.max_z
+            particle.v_z = -particle.v_z
+
+        elif particle.z + particle.v_z * particle.dt < self.min_z:
+            particle.z = self.min_z
+            particle.v_z = -particle.v_z

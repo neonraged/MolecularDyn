@@ -4,7 +4,7 @@ from toolsSimul import *
 
 time = 500
 
-env = Simulation()
+env = Gas(partnum=int(input()))
 env.process(time)
 
 fig = plt.figure()

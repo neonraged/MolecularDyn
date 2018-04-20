@@ -19,34 +19,29 @@ def colliding(p1, p2):
     #  Функция проверки точек на столкновение
 
     if p1.x == p2.x and p1.y == p2.y and p1.z == p2.z:
-        p1.v_x, p2.v_x = p2.v_x, p1.v_x
-        p1.v_y, p2.v_y = p2.v_y, p1.v_y
-        p1.v_z, p2.v_z = p2.v_z, p1.v_z
+        p1.v_x, p2.v_x, p1.ax, p2.ax = p2.v_x, p1.v_x, p2.ax, p1.ax
+        p1.v_y, p2.v_y, p1.ay, p2.ay = p2.v_y, p1.v_y, p2.ay, p1.ay
+        p1.v_z, p2.v_z, p1.az, p2.az = p2.v_z, p1.v_z, p2.az, p1.az
 
 
 class Particle:
 
     #  Создание класса частиц -- единичных обьектов, за которые мы принимаем молекулы идеального газа
 
-    def __init__(self):
+    def __init__(self, types):
         self.x = int(input("X axis start point for particle:"))
         self.y = int(input("Y axis start point for particle:"))
         self.z = int(input("Z axis start point for particle:"))
         self.v_x = int(input("X axis start velocity for particle:"))
         self.v_y = int(input("Y axis start velocity for particle:"))
         self.v_z = int(input("Z axis start velocity for particle:"))
+        self.ax = int(input("X axis start acceleration for particle:"))
+        self.ay = int(input("Y axis start acceleration for particle:"))
+        self.az = int(input("Z axis start acceleration for particle:"))
         self.dt = 0.1
         self.xmass = []
         self.ymass = []
         self.zmass = []
-
-    def move(self):
-        self.x += self.v_x*self.dt
-        self.y += self.v_y*self.dt
-        self.z += self.v_z*self.dt
-        self.xmass.append(self.x)
-        self.ymass.append(self.y)
-        self.zmass.append(self.z)
 
 
 class AnimatedPlot:
@@ -78,7 +73,7 @@ class Gas:
 
     def addparticle(self):
         for i in range(self.partnum):
-            self.particles.append(Particle())
+            self.particles.append(Particle(self.types))
 
     def process(self, time):
 
@@ -88,7 +83,7 @@ class Gas:
 
             for i in range(0, len(self.particles)):
                 a = self.particles[i]
-                a.move()
+                self.move(a)
 
             for bou in range(0, len(self.particles)):
                 self.bounce(self.particles[bou])
@@ -96,28 +91,39 @@ class Gas:
             for con in range(1, len(self.particles)):
                 colliding(self.particles[con-1], self.particles[con])
 
-    def bounce(self, particle):
+    def bounce(self, p):
 
-        if particle.x + particle.v_x * particle.dt > self.max_x:
-            particle.x = self.max_x
-            particle.v_x = -particle.v_x
+        if p.x + p.v_x * p.dt + ((p.ax * (p.dt ** 2))/2) > self.max_x:
+            p.x = self.max_x
+            p.v_x = -p.v_x
 
-        elif particle.x + particle.v_x * particle.dt < self.min_x:
-            particle.x = self.min_x
-            particle.v_x = -particle.v_x
+        elif p.x + p.v_x * p.dt + ((p.ax * (p.dt ** 2))/2) < self.min_x:
+            p.x = self.min_x
+            p.v_x = -p.v_x
 
-        if particle.y + particle.v_y * particle.dt > self.max_y:
-            particle.y = self.max_y
-            particle.v_y = -particle.v_y
+        if p.y + p.v_y * p.dt + ((p.ay * (p.dt ** 2))/2) > self.max_y:
+            p.y = self.max_y
+            p.v_y = -p.v_y
 
-        elif particle.y + particle.v_y * particle.dt < self.min_y:
-            particle.y = self.min_y
-            particle.v_y = -particle.v_y
+        elif p.y + p.v_y * p.dt + ((p.ay * (p.dt ** 2))/2) < self.min_y:
+            p.y = self.min_y
+            p.v_y = -p.v_y
 
-        if particle.z + particle.v_z * particle.dt > self.max_z:
-            particle.z = self.max_z
-            particle.v_z = -particle.v_z
+        if p.z + p.v_z * p.dt + ((p.az * (p.dt ** 2))/2) > self.max_z:
+            p.z = self.max_z
+            p.v_z = -p.v_z
 
-        elif particle.z + particle.v_z * particle.dt < self.min_z:
-            particle.z = self.min_z
-            particle.v_z = -particle.v_z
+        elif p.z + p.v_z * p.dt + ((p.az * (p.dt ** 2))/2) < self.min_z:
+            p.z = self.min_z
+            p.v_z = -p.v_z
+
+    def move(self, p):
+        p.x += p.v_x * p.dt + (p.ax * (p.dt ** 2)) / 2
+        p.y += p.v_y * p.dt + (p.ay * (p.dt ** 2)) / 2
+        p.z += p.v_z * p.dt + (p.az * (p.dt ** 2)) / 2
+        p.v_x += p.ax * p.dt
+        p.v_y += p.ay * p.dt
+        p.v_z += p.az * p.dt
+        p.particle.append(p.x)
+        p.ymass.append(p.y)
+        p.zmass.append(p.z)
